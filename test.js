@@ -1,23 +1,32 @@
 var http = require('http');
 var fs = require('fs');
-var index = fs.readFileSync('index.html');
+var index;
 var timestamp = '';
-var exchange_rates = []
+var exchange_rates = [];
 var i;
+
+fs.readFile('./index.html', function (err, data) {
+    if (err) {
+        throw err;
+    }
+    index = data;
+});
 
 http.createServer(function (req, res) {
 	
-	res.writeHead(200, {'Content-Type': 'text/plain'});
+	res.writeHead(200, {'Content-Type': 'text/html'});
 	res.write(index);
 	for (i = 0; i < exchange_rates.length; i++) {
-		res.write(exchange_rates[i] + '\n');
-	}
+        res.write('<tr>');
+		res.write('<td>' + exchange_rates[i].code + '</td>' + '<td>' + exchange_rates[i].rate + '</td>');
+        res.write('</tr>');
+	}    
+    res.write('</table>');
 	res.end();
-}).listen(8001);
+}).listen(8002);
 
 // Load up required modules:
-var fx = require('money'),
-oxr = require('open-exchange-rates');
+var fx = oxr = require('open-exchange-rates');
 
 // Set App ID (required):
 oxr.set({
@@ -40,12 +49,12 @@ oxr.latest(function(error) {
     timestamp = ('timestamp: ' + (new Date(oxr.timestamp)).toUTCString());
 
     // Each currency is a property in the object/hash, e.g:
-    exchange_rates.push(('EUR: ' + oxr.rates.EUR));
-    exchange_rates.push(usdtogbp = ('GBP: ' + oxr.rates.GBP));
-    exchange_rates.push(usdTohkd = ('INR: ' + oxr.rates.INR));
-    exchange_rates.push(usdTohkd = ('AUD: ' + oxr.rates.AUD));
-    exchange_rates.push(usdTohkd = ('CAD: ' + oxr.rates.CAD));
-    exchange_rates.push(usdTohkd = ('ZAR: ' + oxr.rates.ZAR));
-    exchange_rates.push(usdTohkd = ('NZD: ' + oxr.rates.NZD));
-    exchange_rates.push(usdTohkd = ('JPY: ' + oxr.rates.JPY));
+    exchange_rates.push({code: 'EUR: ', rate: oxr.rates.EUR});
+    exchange_rates.push({code: 'GBP: ', rate: oxr.rates.GBP});
+    exchange_rates.push({code: 'INR: ', rate: oxr.rates.INR});
+    exchange_rates.push({code: 'AUD: ', rate: oxr.rates.AUD});
+    exchange_rates.push({code: 'CAD: ', rate: oxr.rates.CAD});
+    exchange_rates.push({code: 'ZAR: ', rate: oxr.rates.ZAR});
+    exchange_rates.push({code: 'NZD: ', rate: oxr.rates.NZD});
+    exchange_rates.push({code: 'JPY: ', rate: oxr.rates.JPY});
 });
