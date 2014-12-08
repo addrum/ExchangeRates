@@ -1,9 +1,16 @@
-var http = require('http');
-var fs = require('fs');
-var index;
-var timestamp = '';
-var exchange_rates = [];
-var i;
+var http = require('http'), 
+    fs = require('fs'),
+    MongoClient = require('mongodb').MongoClient,
+    collection,
+    index,
+    timestamp = '',
+    exchange_rates = [],
+    i;
+
+MongoClient.connect("mongodb://localhost:27017/exampleDb", function(err, db) {
+  if(err) { return console.dir(err); }
+  collection = db.collection('rates');
+});
 
 fs.readFile('./index.html', function (err, data) {
     if (err) {
